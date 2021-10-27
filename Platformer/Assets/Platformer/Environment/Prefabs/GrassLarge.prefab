@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 783760829507358217}
   - component: {fileID: 758870344032986969}
   - component: {fileID: 766160421584947853}
-  - component: {fileID: 7230413556956389782}
-  - component: {fileID: 3375645107379077253}
+  - component: {fileID: 8868971880069485137}
   m_Layer: 6
   m_Name: GrassLarge
   m_TagString: Untagged
@@ -83,23 +82,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!54 &7230413556956389782
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 789284863310869645}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!65 &3375645107379077253
+--- !u!65 &8868971880069485137
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -110,5 +93,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.0184963, z: 1.0000002}
-  m_Center: {x: 0, y: -0.509248, z: -0.00000007947286}
+  m_Size: {x: 1, y: 1.0000001, z: 1.0000001}
+  m_Center: {x: 0, y: -0.49999997, z: -0.000000059604645}

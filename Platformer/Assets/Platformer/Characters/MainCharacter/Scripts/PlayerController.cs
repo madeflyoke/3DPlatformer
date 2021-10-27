@@ -1,7 +1,5 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic;
-using System;
 
 enum PlayerState
 {
@@ -18,10 +16,11 @@ public enum PlayerAim
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] GameObject testobj;
     [SerializeField] private RepositoryBase repositoryBase;
+    [SerializeField] private Collider weapon;
     private PlayerState currentPlayerState;
     private PlayerAim currentPlayerAim;
+    private string currentAnimationName;
     private NavMeshAgent agent;
     private Animator animator;
 
@@ -39,34 +38,50 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse0)/*&&currentPlayerState==PlayerState.Idle*/)//can change direction while moves?
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//MOUSE
-            if (Physics.Raycast(ray, out currentRayPoint))
-            {
-                switch (currentRayPoint.collider.gameObject.layer)
-                {
-                    case 6:
-                        SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Ground);
-                        break;//ground
-                    case 7:
-                        SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Enemy);
-                        break;//enemy
-
-                }
-            }
+            FindPoint();
         }
     }
     private void FixedUpdate()
     {
-        if (currentPlayerState == PlayerState.Moving && !agent.pathPending)
+        switch (currentPlayerState)
         {
-            CheckPos(currentPlayerAim);
-            Debug.Log(agent.path.status);
+            case PlayerState.Moving:
+                if (!agent.pathPending)
+                    CheckPos(currentPlayerAim);
+                break;
+            case PlayerState.Attack:
+                Attack();
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void FindPoint()  //find point and sort for layers
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//MOUSE
+        if (Physics.Raycast(ray, out currentRayPoint))
+        {
+            switch (currentRayPoint.collider.gameObject.layer)
+            {
+                case 6:
+                    SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Ground);
+                    break;//ground
+                case 7:
+                    SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Enemy);
+                    break;//enemy
+
+            }
         }
     }
 
-    private void SetCurrentBehaviour(PlayerState state, PlayerAim aim)
+
+    private void SetCurrentBehaviour(PlayerState state, PlayerAim aim) //set behav depending on state and aim
     {
         currentPlayerAim = aim;
+        if (!string.IsNullOrEmpty(currentAnimationName)){ animator.SetBool(currentAnimationName, false); }
+
         switch (state)
         {
             case PlayerState.Idle:
@@ -81,17 +96,19 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Moving:
                 if (IsValidPath(aim))
                 {
+                    currentAnimationName = "isMoving";
+                    animator.SetBool(currentAnimationName, true);
                     switch (aim)
                     {
                         case PlayerAim.Ground:
                             EventManager.CallOnSetPoint(aim, newPos);
                             break;
                         case PlayerAim.Enemy:
-                            EventManager.CallOnSetPoint(aim, new Vector3(currentRayPoint.transform.position.x, 
-                                                                         currentRayPoint.collider.bounds.max.y+0.5f,
+                            EventManager.CallOnSetPoint(aim, new Vector3(currentRayPoint.transform.position.x,
+                                                                         currentRayPoint.collider.bounds.max.y + 0.5f,
                                                                           currentRayPoint.transform.position.z));
                             break;
-                    }                    
+                    }
                     currentPlayerState = PlayerState.Moving;
                 }
                 break;
@@ -99,8 +116,11 @@ public class PlayerController : MonoBehaviour
                 switch (aim)
                 {
                     case PlayerAim.Enemy:
-                        currentPlayerState = PlayerState.Attack;
                         Attack();
+                        animator.SetBool(currentAnimationName, true);
+                        currentAnimationName = "isAttacking";
+                        animator.SetBool(currentAnimationName, true);
+                        currentPlayerState = PlayerState.Attack;
                         break;
                 }
                 break;
@@ -114,11 +134,10 @@ public class PlayerController : MonoBehaviour
             NavMeshPath path = new NavMeshPath();
             agent.CalculatePath(newPos, path);
             agent.SetPath(path);
-            
+
             if (CheckPos(aim)) //first check for path status
-            {                             
-                animator.SetBool("isMoving", true);
-                return true;            
+            {
+                return true;
             }
             else
                 return false;
@@ -130,14 +149,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private bool CheckPos(PlayerAim aim)
+    private bool CheckPos(PlayerAim aim) //repeatly check distance to point 
     {
         switch (aim)
         {
             case PlayerAim.Ground:
-                if (agent.path.status != NavMeshPathStatus.PathComplete)
+                if (agent.path.status != NavMeshPathStatus.PathComplete) //is the path reachable
                 {
-                    animator.SetBool("isMoving", false);
                     agent.ResetPath();
                     SetCurrentBehaviour(PlayerState.Idle, PlayerAim.None);
                     return false;
@@ -147,7 +165,6 @@ public class PlayerController : MonoBehaviour
                     Vector3 direction = newPos - transform.position;
                     if (direction.magnitude <= 0.5f)
                     {
-                        animator.SetBool("isMoving", false);
                         SetCurrentBehaviour(PlayerState.Idle, PlayerAim.None);
                         return false;
                     }
@@ -157,36 +174,25 @@ public class PlayerController : MonoBehaviour
                 float distanceToEnemy = (currentRayPoint.transform.position - transform.position).magnitude;
                 if (distanceToEnemy <= repositoryBase.playerInfoObj.attackRange)
                 {
-                    animator.SetBool("isMoving", false);
                     agent.ResetPath();
                     SetCurrentBehaviour(PlayerState.Attack, PlayerAim.Enemy);
+                    transform.rotation = Quaternion.LookRotation(currentRayPoint.transform.position);//turn towards enemy
                 }
                 return true;
         }
         return false;
-        //rotate character
-
-        //float turnAngle = Mathf.Atan2(direction.normalized.x, direction.normalized.z) * Mathf.Rad2Deg;
-        //Quaternion rotateTo = Quaternion.Euler(new Vector3(0, turnAngle, 0));
-        //transform.rotation = Quaternion.Slerp(transform.rotation, rotateTo, Time.deltaTime * 10);
-
-
-        //transform.position = Vector3.MoveTowards(transform.position, newPos, Time.deltaTime * speed);//moving
-        //if (direction.magnitude <= 0.5f)
-        //{
-        //    movePointClone.SetActive(false);
-        //    if (direction.magnitude <= 0.1f)
-        //    {
-        //        animator.SetBool("isMoving", false);
-        //        SetCurrentState(PlayerState.Idle);
-        //    }
-        //}
     }
 
     private void Attack()
     {
-        animator.SetBool("isAttacking", true);
+        animator.SetFloat("attackNumber", Random.Range(0, 2));
     }
+
+    private void Hit() //animator controller
+    {
+        weapon.isTrigger = true;
+    }
+
 
 
 }

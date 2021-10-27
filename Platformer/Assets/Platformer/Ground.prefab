@@ -711,7 +711,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: GrassLarge
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3375645107379077253, guid: 428582bb9f3084745b783755a277c458, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 428582bb9f3084745b783755a277c458, type: 3}
 --- !u!4 &1541357248304344274 stripped
 Transform:
