@@ -1373,8 +1373,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fa8920987012b241b206227daec3134, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  repositoryBase: {fileID: 0}
-  weapon: {fileID: 6550414895054848055}
+  repositoryBase: {fileID: 6052256138568033546, guid: a00ade098d21f8e4f965b50738b16a5d,
+    type: 3}
 --- !u!136 &8114711126178264485
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -12,20 +12,22 @@ public enum PlayerAim
     None,
     Ground,
     Enemy,
+    Interactable
 }
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private RepositoryBase repositoryBase;
-    [SerializeField] private Collider weapon;
     private PlayerState currentPlayerState;
     private PlayerAim currentPlayerAim;
     private string currentAnimationName;
     private NavMeshAgent agent;
     private Animator animator;
 
-    private Vector3 newPos;
-    private RaycastHit currentRayPoint;
+    private RaycastHit currentRayPoint; //ray point on click screen
+    private Vector3 newPos; //correct position to go
+    private Enemy currentEnemy;
+    private float prevTime;
 
     private void Awake()
     {
@@ -40,6 +42,13 @@ public class PlayerController : MonoBehaviour
         {
             FindPoint();
         }
+        if (currentPlayerState == PlayerState.Attack && Input.GetKeyDown(KeyCode.A)
+                    && Time.time > prevTime + repositoryBase.playerInfoObj.attackRate)
+        {
+            Attack();
+            prevTime = Time.time;
+        }
+
     }
     private void FixedUpdate()
     {
@@ -50,7 +59,7 @@ public class PlayerController : MonoBehaviour
                     CheckPos(currentPlayerAim);
                 break;
             case PlayerState.Attack:
-                Attack();
+                CheckPos(currentPlayerAim);
                 break;
             default:
                 break;
@@ -63,7 +72,7 @@ public class PlayerController : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//MOUSE
         if (Physics.Raycast(ray, out currentRayPoint))
         {
-            switch (currentRayPoint.collider.gameObject.layer)
+            switch (currentRayPoint.transform.root.gameObject.layer)
             {
                 case 6:
                     SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Ground);
@@ -71,6 +80,9 @@ public class PlayerController : MonoBehaviour
                 case 7:
                     SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Enemy);
                     break;//enemy
+                case 9:
+                    SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Interactable);
+                    break;//interactable
 
             }
         }
@@ -80,7 +92,7 @@ public class PlayerController : MonoBehaviour
     private void SetCurrentBehaviour(PlayerState state, PlayerAim aim) //set behav depending on state and aim
     {
         currentPlayerAim = aim;
-        if (!string.IsNullOrEmpty(currentAnimationName)){ animator.SetBool(currentAnimationName, false); }
+        if (!string.IsNullOrEmpty(currentAnimationName)) { animator.SetBool(currentAnimationName, false); }
 
         switch (state)
         {
@@ -96,13 +108,17 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Moving:
                 if (IsValidPath(aim))
                 {
-                    currentAnimationName = "isMoving";
+                    currentAnimationName = "IsMoving";
                     animator.SetBool(currentAnimationName, true);
                     switch (aim)
                     {
-                        case PlayerAim.Ground:
+                        case PlayerAim.Interactable:
+                            EventManager.CallOnSetPoint(aim, currentRayPoint.collider.transform.position);
+                            break;
+                        case PlayerAim.Ground:                     
                             EventManager.CallOnSetPoint(aim, newPos);
                             break;
+
                         case PlayerAim.Enemy:
                             EventManager.CallOnSetPoint(aim, new Vector3(currentRayPoint.transform.position.x,
                                                                          currentRayPoint.collider.bounds.max.y + 0.5f,
@@ -116,11 +132,8 @@ public class PlayerController : MonoBehaviour
                 switch (aim)
                 {
                     case PlayerAim.Enemy:
-                        Attack();
-                        animator.SetBool(currentAnimationName, true);
-                        currentAnimationName = "isAttacking";
-                        animator.SetBool(currentAnimationName, true);
                         currentPlayerState = PlayerState.Attack;
+                        currentEnemy = currentRayPoint.collider.transform.root.GetComponent<Enemy>();
                         break;
                 }
                 break;
@@ -139,20 +152,19 @@ public class PlayerController : MonoBehaviour
             {
                 return true;
             }
+               
             else
                 return false;
         }
         else
-        {
-            Debug.LogWarning("InvalidPathPoint");
             return false;
-        }
     }
 
-    private bool CheckPos(PlayerAim aim) //repeatly check distance to point 
+    private bool CheckPos(PlayerAim aim) //repeatly check the point 
     {
         switch (aim)
         {
+            case PlayerAim.Interactable:
             case PlayerAim.Ground:
                 if (agent.path.status != NavMeshPathStatus.PathComplete) //is the path reachable
                 {
@@ -171,26 +183,40 @@ public class PlayerController : MonoBehaviour
                     return true;
                 }
             case PlayerAim.Enemy:
+                if (currentPlayerState == PlayerState.Attack)
+                {
+                    if (currentEnemy.gameObject.layer == 6)
+                    {
+                        SetCurrentBehaviour(PlayerState.Idle, PlayerAim.None);
+                        return false;
+                    }
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                                                      Quaternion.LookRotation(currentRayPoint.transform.position - transform.position),
+                                                                  Time.deltaTime * agent.angularSpeed / 2); //turn to enemy
+                    return true;
+                }
                 float distanceToEnemy = (currentRayPoint.transform.position - transform.position).magnitude;
                 if (distanceToEnemy <= repositoryBase.playerInfoObj.attackRange)
                 {
                     agent.ResetPath();
                     SetCurrentBehaviour(PlayerState.Attack, PlayerAim.Enemy);
-                    transform.rotation = Quaternion.LookRotation(currentRayPoint.transform.position);//turn towards enemy
                 }
                 return true;
         }
         return false;
     }
 
+
+
     private void Attack()
     {
-        animator.SetFloat("attackNumber", Random.Range(0, 2));
+        animator.SetFloat("AttackNumber", Random.Range(0f, 1f));
+        animator.SetTrigger("Attack");
     }
 
     private void Hit() //animator controller
     {
-        weapon.isTrigger = true;
+        currentEnemy.GetDamage(repositoryBase.playerInfoObj.damage);
     }
 
 
