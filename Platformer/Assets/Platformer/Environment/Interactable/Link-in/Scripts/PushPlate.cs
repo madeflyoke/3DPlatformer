@@ -2,18 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PushPlate : MonoBehaviour
+public class PushPlate : InteractObject
 {
-    [SerializeField] private GameObject interactObject;
-    [SerializeField] private Material buttonMaterial;
-    private void OnTriggerEnter(Collider other)
+    [SerializeField] private Renderer buttonRenderer;  
+    protected override void ObjectDisable()
     {
-        if (other.CompareTag("Player"))
-        {
-            buttonMaterial.color = Color.blue;
-            interactObject.GetComponent<IObstacle>().locking = false;
-            enabled = false;
-        }
+        buttonRenderer.material.color = Color.cyan;
+        AudioManager.instance.PlayClip(unlockSFX, AudioManager.instance.envVolume);
+        enabled = false;
     }
 
 }

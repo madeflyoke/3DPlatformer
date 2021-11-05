@@ -9,36 +9,47 @@ public abstract class Enemy:MonoBehaviour
     [SerializeField] private ParticleSystem deathEffect;
     [SerializeField] private float MaxHealth;
     [SerializeField] private float Damage;
+    [SerializeField] private AudioClip getDamageSFX;
+    [SerializeField] private AudioClip dieSFX;
     private float currentHealth;
     private Animator animator;
+    private AudioSource audioSource;
+   
+
+    private NavMeshObstacle navObstacle;
+    [HideInInspector] public bool haveLootItem;
     
     private void Awake()
     {
         currentHealth = MaxHealth;
+        audioSource = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
+        navObstacle = GetComponent<NavMeshObstacle>();
+        audioSource.volume = AudioManager.instance.enemyVolume;
     }
 
     public void GetDamage(float value)
-    {
-        
+    {       
         currentHealth -= value;
         if (currentHealth==0)
             Die();
         animator.SetTrigger("GetHit");
-        Debug.Log(currentHealth);
+        audioSource.PlayOneShot(getDamageSFX);
     }
 
     private void Die()
     {
         animator.SetTrigger("Die");
         gameObject.layer = 6;//ground layer
-        GetComponent<NavMeshObstacle>().enabled = false;
+        navObstacle.enabled = false;
         StartCoroutine(DieEffect());
     }
 
     private IEnumerator DieEffect()
     {
         yield return new WaitForSeconds(3f);
+        if (haveLootItem)
+            GetComponent<InteractItemDrop>().DropItem();
         Destroy(gameObject,0.1f);
         Instantiate(deathEffect, transform.position, Quaternion.identity).Play();           
     }

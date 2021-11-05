@@ -439,7 +439,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &540050114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1412,6 +1412,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: '[RepositoryBase]'
       objectReference: {fileID: 0}
+    - target: {fileID: 6052256138568033545, guid: a00ade098d21f8e4f965b50738b16a5d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6052256138568033547, guid: a00ade098d21f8e4f965b50738b16a5d,
         type: 3}
       propertyPath: m_RootOrder
@@ -1485,7 +1490,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1170897857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1578,7 +1583,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
   m_StaticEditorFlags: 4294967263
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &1418300006
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1747,7 +1752,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &6893028199186481133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1760,11 +1765,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5857a835153d71c459e96e2a32d6a333, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToDrop: 0.15
+  pointDropTime: 0.15
   MovePointer: {fileID: 8891407453546736067, guid: 8d4e2e876691eeb458f68c34a90ecb8e,
     type: 3}
   EnemyPointer: {fileID: 8941687436713830248, guid: f4df444b26a5fba4bbd33676e33d8aba,
     type: 3}
+  InteractPointer: {fileID: 0}
 --- !u!4 &6893028199186481134
 Transform:
   m_ObjectHideFlags: 0

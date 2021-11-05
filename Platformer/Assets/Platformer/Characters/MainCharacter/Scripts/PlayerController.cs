@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.AI;
-
 enum PlayerState
 {
     Idle,
@@ -18,11 +17,14 @@ public enum PlayerAim
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private RepositoryBase repositoryBase;
+    [SerializeField] private AudioClip attackSFX;
     private PlayerState currentPlayerState;
     private PlayerAim currentPlayerAim;
     private string currentAnimationName;
     private NavMeshAgent agent;
     private Animator animator;
+    private AudioSource audioSource;
+    
 
     private RaycastHit currentRayPoint; //ray point on click screen
     private Vector3 newPos; //correct position to go
@@ -32,8 +34,10 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         currentPlayerState = PlayerState.Idle;
+        audioSource = GetComponent<AudioSource>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        audioSource.volume = AudioManager.instance.playerVolume;
     }
 
     private void Update()
@@ -64,7 +68,6 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
-
     }
 
     private void FindPoint()  //find point and sort for layers
@@ -72,8 +75,8 @@ public class PlayerController : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//MOUSE
         if (Physics.Raycast(ray, out currentRayPoint))
         {
-            switch (currentRayPoint.transform.root.gameObject.layer)
-            {
+            switch (currentRayPoint.transform.gameObject.layer)
+            {                
                 case 6:
                     SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Ground);
                     break;//ground
@@ -113,7 +116,7 @@ public class PlayerController : MonoBehaviour
                     switch (aim)
                     {
                         case PlayerAim.Interactable:
-                            EventManager.CallOnSetPoint(aim, currentRayPoint.collider.transform.position);
+                            EventManager.CallOnSetPoint(aim, currentRayPoint.collider.bounds.center);
                             break;
                         case PlayerAim.Ground:                     
                             EventManager.CallOnSetPoint(aim, newPos);
@@ -141,7 +144,7 @@ public class PlayerController : MonoBehaviour
     }
     private bool IsValidPath(PlayerAim aim)
     {
-        if (NavMesh.SamplePosition(currentRayPoint.collider.transform.position, out NavMeshHit hit, 1f, 1)) //get the nearest navpoint
+        if (NavMesh.SamplePosition(currentRayPoint.collider.transform.position, out NavMeshHit hit, 2f,1)) //get the nearest navpoint
         {
             newPos = hit.position;
             NavMeshPath path = new NavMeshPath();
@@ -212,11 +215,13 @@ public class PlayerController : MonoBehaviour
     {
         animator.SetFloat("AttackNumber", Random.Range(0f, 1f));
         animator.SetTrigger("Attack");
+ 
     }
 
     private void Hit() //animator controller
     {
         currentEnemy.GetDamage(repositoryBase.playerInfoObj.damage);
+        audioSource.PlayOneShot(attackSFX);
     }
 
 

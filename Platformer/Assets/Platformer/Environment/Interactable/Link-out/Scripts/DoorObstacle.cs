@@ -1,37 +1,27 @@
 using UnityEngine;
-using UnityEngine.AI;
 using DG.Tweening;
+using System.Collections;
 
-public class DoorObstacle : MonoBehaviour, IObstacle
+public class DoorObstacle : Obstacle
 {
-    [SerializeField] private GameObject PartToUnlock;
-    private NavMeshObstacle Obstacle;
-    private bool isLocked = true;
-
-    public bool locking { get => isLocked; set => isLocked =value; }
-    public GameObject partToUnlock =>PartToUnlock;
-    public NavMeshObstacle obstacle => Obstacle;
-
-    private void Awake()
+    [SerializeField] private GameObject pivot;
+    public override void Unlock()
     {
-        Obstacle = GetComponent<NavMeshObstacle>();
+        isLocked = false;
     }
-
-    public void Unlock()
-    {
-        partToUnlock.transform.DORotate(new Vector3(0f, 90f, 0f), 1f);
-        Obstacle.enabled = false;
-    }
-
     private void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("triger");
+    {     
         if (!isLocked)
         {
-            if (other.CompareTag("Player"))
+            if (other.gameObject.layer == 3)
             {
-                Unlock();
+                pivot.transform.DOLocalRotate(new Vector3(0f, 90f, 0f), 1f);
+                obstacle.enabled = false;
+                audioSource.PlayOneShot(unlockSFX);
+                isLocked = true;
             }
         }
     }
+
+
 }

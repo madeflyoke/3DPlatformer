@@ -37,7 +37,7 @@ public class PointersHandler : MonoBehaviour
 
     private void SetPointBehaviour(PlayerAim aim, Vector3 pos)
     {
-        DOTween.Clear();
+        DOTween.Kill(this);
         currentPointer?.SetActive(false);
         switch (aim)
         {

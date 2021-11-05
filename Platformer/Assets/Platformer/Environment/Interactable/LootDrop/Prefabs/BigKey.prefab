@@ -4876,6 +4876,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactObject: {fileID: 0}
+  unlockSFX: {fileID: 8300000, guid: 479a6bf405d4cdf42938fe137a8daf48, type: 3}
 --- !u!65 &8049864609863799877
 BoxCollider:
   m_ObjectHideFlags: 0
