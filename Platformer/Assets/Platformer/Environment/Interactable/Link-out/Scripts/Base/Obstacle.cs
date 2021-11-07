@@ -15,6 +15,10 @@ public class Obstacle: MonoBehaviour
     {
         obstacle = GetComponent<NavMeshObstacle>();
         audioSource = GetComponent<AudioSource>();
+        
+    }
+    private void Start()
+    {
         audioSource.volume = AudioManager.instance.envVolume;
     }
     public virtual void Unlock() { }

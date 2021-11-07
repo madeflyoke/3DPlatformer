@@ -7,7 +7,10 @@ public class FinishPoint : MonoBehaviour
     private AudioSource audioSource;
     private void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();       
+    }
+    private void Start()
+    {
         audioSource.volume = AudioManager.instance.playerVolume;
     }
     private void OnTriggerEnter(Collider other)

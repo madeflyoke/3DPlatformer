@@ -37,6 +37,11 @@ public class PlayerController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        
+    }
+
+    private void Start()
+    {
         audioSource.volume = AudioManager.instance.playerVolume;
     }
 

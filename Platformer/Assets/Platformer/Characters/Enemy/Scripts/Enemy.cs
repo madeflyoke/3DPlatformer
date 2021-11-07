@@ -25,6 +25,10 @@ public abstract class Enemy:MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
         navObstacle = GetComponent<NavMeshObstacle>();
+        
+    }
+    private void Start()
+    {
         audioSource.volume = AudioManager.instance.enemyVolume;
     }
 
