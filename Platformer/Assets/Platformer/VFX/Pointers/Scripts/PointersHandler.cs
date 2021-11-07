@@ -1,15 +1,19 @@
-using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Zenject;
 
 
 
 public class PointersHandler : MonoBehaviour
 {
+    [Inject] private RepositoryBase repositoryBase;
+
+    [SerializeField] private AudioClip pointerSFX;
     [SerializeField] private float pointDropTime=0.15f;
     [SerializeField] private GameObject MovePointer;
     [SerializeField] private GameObject EnemyPointer;
     [SerializeField] private GameObject InteractPointer;
+    private AudioSource audioSource;
     public GameObject movePointer { get; private set; }
     public GameObject enemyPointer { get; private set; }
     public GameObject interactPointer { get; private set; }
@@ -18,6 +22,7 @@ public class PointersHandler : MonoBehaviour
 
     private void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
         movePointer = Instantiate(MovePointer, transform, false);
         movePointer.SetActive(false);
         enemyPointer = Instantiate(EnemyPointer, transform, false);
@@ -58,6 +63,7 @@ public class PointersHandler : MonoBehaviour
         transform.position = pos+Vector3.up;
         currentPointer.SetActive(true);      
         transform.DOMove(pos, pointDropTime);
+        audioSource.PlayOneShot(pointerSFX, repositoryBase.playerSettingsObj.envVolume*1.5f);
 
     }
   

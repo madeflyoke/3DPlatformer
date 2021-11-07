@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using Zenject;
 enum PlayerState
 {
     Idle,
@@ -16,7 +17,7 @@ public enum PlayerAim
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private RepositoryBase repositoryBase;
+    [Inject] private RepositoryBase repositoryBase;
     [SerializeField] private AudioClip attackSFX;
     private PlayerState currentPlayerState;
     private PlayerAim currentPlayerAim;
@@ -42,7 +43,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        audioSource.volume = AudioManager.instance.playerVolume;
+        audioSource.volume = repositoryBase.playerSettingsObj.characterVolume;
     }
 
     private void Update()

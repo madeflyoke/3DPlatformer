@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic;
+using Zenject;
 
 [RequireComponent(typeof(NavMeshObstacle))]
 public class Obstacle: MonoBehaviour
 {
+    [Inject] private RepositoryBase repositoryBase;
     [SerializeField] protected float animationUnlockTime=1f;
     [SerializeField] protected AudioClip unlockSFX;
     protected AudioSource audioSource;
@@ -14,12 +15,11 @@ public class Obstacle: MonoBehaviour
     protected void Awake()
     {
         obstacle = GetComponent<NavMeshObstacle>();
-        audioSource = GetComponent<AudioSource>();
-        
+        audioSource = GetComponent<AudioSource>();      
     }
     private void Start()
     {
-        audioSource.volume = AudioManager.instance.envVolume;
+        audioSource.volume = repositoryBase.playerSettingsObj.envVolume;
     }
     public virtual void Unlock() { }
 

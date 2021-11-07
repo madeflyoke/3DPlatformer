@@ -1,8 +1,10 @@
 using UnityEngine;
-
+using Zenject;
 
 public class FinishPoint : MonoBehaviour
 {
+    [Inject] private RepositoryBase repositoryBase;
+
     [SerializeField] private AudioClip winSFX;
     private AudioSource audioSource;
     private void Awake()
@@ -11,7 +13,7 @@ public class FinishPoint : MonoBehaviour
     }
     private void Start()
     {
-        audioSource.volume = AudioManager.instance.playerVolume;
+        audioSource.volume = repositoryBase.playerSettingsObj.characterVolume;
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -19,6 +21,7 @@ public class FinishPoint : MonoBehaviour
         {
             audioSource.PlayOneShot(winSFX);
             EventManager.CallOnLevelComplete();
+            Debug.Log("win");
         }
     }
 }

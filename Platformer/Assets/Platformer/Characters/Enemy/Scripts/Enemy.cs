@@ -1,16 +1,17 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using Zenject;
 
 
 [RequireComponent(typeof(Animator))]
 public abstract class Enemy:MonoBehaviour 
 {
+    [Inject] private RepositoryBase repositoryBase;
     [SerializeField] private ParticleSystem deathEffect;
     [SerializeField] private float MaxHealth;
     [SerializeField] private float Damage;
     [SerializeField] private AudioClip getDamageSFX;
-    [SerializeField] private AudioClip dieSFX;
     private float currentHealth;
     private Animator animator;
     private AudioSource audioSource;
@@ -29,7 +30,7 @@ public abstract class Enemy:MonoBehaviour
     }
     private void Start()
     {
-        audioSource.volume = AudioManager.instance.enemyVolume;
+        audioSource.volume = repositoryBase.playerSettingsObj.enemyVolume;
     }
 
     public void GetDamage(float value)
