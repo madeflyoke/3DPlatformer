@@ -1350,6 +1350,7 @@ GameObject:
   - component: {fileID: 1708136793182449145}
   - component: {fileID: 6339183662009743294}
   - component: {fileID: 3946414606920551869}
+  - component: {fileID: 6133390717615535279}
   m_Layer: 3
   m_Name: MainCharacter
   m_TagString: Player
@@ -1426,9 +1427,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fa8920987012b241b206227daec3134, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  repositoryBase: {fileID: 6052256138568033546, guid: a00ade098d21f8e4f965b50738b16a5d,
-    type: 3}
-  attackSFX: {fileID: 8300000, guid: 4a578695dfac4422d81299af3481ea10, type: 3}
+  attackSFX: {fileID: 8300000, guid: 6cdf2b6afcdf03c4fb959f056819ba48, type: 3}
+  getDamageSfx: {fileID: 0}
 --- !u!82 &3946414606920551869
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1525,6 +1525,14 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!81 &6133390717615535279
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8114711126178264486}
+  m_Enabled: 1
 --- !u!1 &8114711126178264488
 GameObject:
   m_ObjectHideFlags: 0

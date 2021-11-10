@@ -1,24 +1,38 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class ScenesController : MonoBehaviour
 {
-    private int currentSceneIndex = 0;
-
+    private int currentSceneIndex=0;
+    private AsyncOperation loading;
     private void OnEnable()
     {
-        EventManager.levelCompleteEvent += ChangeScene;
+        EventManager.levelCompleteEvent += SetNextScene;
+        EventManager.startGameEvent += SetNextScene;
     }
 
     private void OnDisable()
     {
-        EventManager.levelCompleteEvent -= ChangeScene;
+        EventManager.levelCompleteEvent -= SetNextScene;
+        EventManager.startGameEvent -= SetNextScene;
     }
-
-    private void ChangeScene()
+    private IEnumerator Loading(AsyncOperation operation)
+    {
+        while (operation.progress<1)
+        {
+            Debug.Log("loading" + operation.progress);
+            yield return null;
+        }
+        Debug.Log("finish");
+        EventManager.CallOnSetScene(currentSceneIndex);
+        yield return null;
+    } 
+    
+    private void SetNextScene()
     {
         currentSceneIndex++;
-        //EventManager.CallOnChangeScene(currentSceneIndex);
-        //SceneManager.LoadSceneAsync(currentSceneIndex);
+        StartCoroutine(Loading(SceneManager.LoadSceneAsync(currentSceneIndex)));
     }
+
 }

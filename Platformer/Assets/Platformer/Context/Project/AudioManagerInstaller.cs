@@ -6,6 +6,6 @@ public class AudioManagerInstaller : MonoInstaller
     [SerializeField] private AudioManager audioManager;
     public override void InstallBindings()
     {
-        Container.Bind<AudioManager>().FromComponentInNewPrefab(audioManager).AsSingle();      
+        Container.Bind<AudioManager>().FromComponentInNewPrefab(audioManager).AsSingle().NonLazy();      
     }
 }

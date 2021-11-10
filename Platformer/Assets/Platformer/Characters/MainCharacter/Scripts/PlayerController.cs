@@ -5,7 +5,7 @@ enum PlayerState
 {
     Idle,
     Moving,
-    Attack,
+    Attack,  
 }
 public enum PlayerAim
 {
@@ -15,18 +15,21 @@ public enum PlayerAim
     Interactable
 }
 
+
 public class PlayerController : MonoBehaviour
 {
     [Inject] private RepositoryBase repositoryBase;
     [SerializeField] private AudioClip attackSFX;
+
     private PlayerState currentPlayerState;
     private PlayerAim currentPlayerAim;
     private string currentAnimationName;
+    private float currentHealth;
+
     private NavMeshAgent agent;
     private Animator animator;
     private AudioSource audioSource;
     
-
     private RaycastHit currentRayPoint; //ray point on click screen
     private Vector3 newPos; //correct position to go
     private Enemy currentEnemy;
@@ -38,7 +41,7 @@ public class PlayerController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
-        
+        currentHealth = repositoryBase.playerInfoObj.maxHealth;     
     }
 
     private void Start()
@@ -58,9 +61,11 @@ public class PlayerController : MonoBehaviour
             Attack();
             prevTime = Time.time;
         }
+        ValidateCurrentBehaviour();
 
     }
-    private void FixedUpdate()
+
+    private void ValidateCurrentBehaviour()
     {
         switch (currentPlayerState)
         {
@@ -79,7 +84,7 @@ public class PlayerController : MonoBehaviour
     private void FindPoint()  //find point and sort for layers
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//MOUSE
-        if (Physics.Raycast(ray, out currentRayPoint))
+        if (Physics.Raycast(ray, out currentRayPoint, maxDistance:100f, layerMask:-1, QueryTriggerInteraction.Ignore))
         {
             switch (currentRayPoint.transform.gameObject.layer)
             {                
@@ -96,7 +101,6 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
 
     private void SetCurrentBehaviour(PlayerState state, PlayerAim aim) //set behav depending on state and aim
     {
@@ -215,13 +219,28 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    public void GetDamage(float damage)
+    {
+        currentHealth -= damage;
+        EventManager.CallOnCurrentPlayerHealth(currentHealth);
+        if (currentHealth<=0)
+        {
+            Die();
+            return;
+        }
+        animator.SetTrigger("GetHit");
+    }
 
+    private void Die()
+    {
+        animator.SetTrigger("Die");
+        EventManager.CallOnPlayerDie();
+    }
 
     private void Attack()
     {
         animator.SetFloat("AttackNumber", Random.Range(0f, 1f));
-        animator.SetTrigger("Attack");
- 
+        animator.SetTrigger("Attack"); 
     }
 
     private void Hit() //animator controller

@@ -178,10 +178,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathEffect: {fileID: 2052742559792449194, guid: 98ed90ff06e56b34d8833ac23269aba2,
     type: 3}
-  MaxHealth: 50
-  Damage: 0
-  getDamageSFX: {fileID: 8300000, guid: 3db1284c00dd04218991196e8edbee63, type: 3}
-  dieSFX: {fileID: 0}
+  maxHealth: 50
+  damage: 0
+  attackRange: 0.5
+  attackRate: 0
+  getDamageSFX: {fileID: 0}
+  attackSFX: {fileID: 0}
   haveLootItem: 0
 --- !u!54 &3078163971255514814
 Rigidbody:

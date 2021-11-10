@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2521822615496949324}
   - component: {fileID: 7600821936186500475}
   - component: {fileID: 6860288239839634552}
+  - component: {fileID: 2722004889583438415}
   m_Layer: 9
   m_Name: Jail_Door
   m_TagString: Untagged
@@ -225,6 +226,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &2722004889583438415
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926224151253447458}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.99148947, y: 1.6173751, z: 0.08432782}
+  m_Center: {x: 0.005393535, y: -0.014314681, z: 0.00042146444}
 --- !u!1 &1327584664964741034
 GameObject:
   m_ObjectHideFlags: 0

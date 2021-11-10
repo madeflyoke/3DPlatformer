@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 188636722981311776}
   - component: {fileID: 6959170107862391874}
   - component: {fileID: 8049864609863799877}
+  - component: {fileID: 1793386039048900108}
   m_Layer: 9
   m_Name: BigKey
   m_TagString: Untagged
@@ -4886,6 +4887,19 @@ BoxCollider:
   m_GameObject: {fileID: 188636722981311777}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.72797275, y: 0.18043196, z: 0.6815945}
+  m_Center: {x: 0.022090971, y: 0.03454256, z: -0.043118402}
+--- !u!65 &1793386039048900108
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 188636722981311777}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.72797275, y: 0.18043196, z: 0.6815945}

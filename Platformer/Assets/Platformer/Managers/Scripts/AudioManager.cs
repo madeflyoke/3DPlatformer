@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 public class AudioManager : MonoBehaviour
@@ -7,7 +8,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip evilLevelTheme;
     [SerializeField] private AudioClip someNextLevelTheme;
 
-    private AudioSource[] audioSources;
+    private AudioSource[] audioSources; //audio channels
 
     private void Awake()
     {
@@ -15,33 +16,25 @@ public class AudioManager : MonoBehaviour
         audioSources[0].loop = true;
         audioSources[0].volume = repositoryBase.playerSettingsObj.musicVolume;       
     }
-    private void Start()
-    {
-        SetMainTheme(0);
-    }
     private void OnEnable()
     {
-        EventManager.changeSceneEvent += SetMainTheme;
+        EventManager.setSceneEvent += SetMainTheme;
         EventManager.levelCompleteEvent += () => audioSources[0].Stop();
     }
 
     private void OnDisable()
     {
-        EventManager.changeSceneEvent -= SetMainTheme;
+        EventManager.setSceneEvent += SetMainTheme;
         EventManager.levelCompleteEvent -= () => audioSources[0].Stop();
-
     }
     private void SetMainTheme(int sceneIndex)
     {
         switch (sceneIndex)
         {
-            case 0:
+            case 1:
                 audioSources[0].clip = evilLevelTheme;
                 break;
-            case 1:
-                Debug.Log("nextThemePlaying...");
-                break;
-        }
+        }     
         audioSources[0].PlayDelayed(2f);
     }
 

@@ -7,10 +7,10 @@ public class PlayerSettings
     private const string EnvVolumeKey = "EnvVolume";
     private const string MusicVolumeKey = "MusicVolume";
     
-    public float characterVolume { get; private set; } = 0.5f;
+    public float characterVolume { get; private set; } = 0.4f;
     public float enemyVolume { get; private set; } = 0.4f;
-    public float envVolume { get; private set; } = 0.1f;
-    public float musicVolume { get; private set; } = 0.4f;
+    public float envVolume { get; private set; } = 0.2f;
+    public float musicVolume { get; private set; } = 0.7f;
 
     public void Initialize()
     {
