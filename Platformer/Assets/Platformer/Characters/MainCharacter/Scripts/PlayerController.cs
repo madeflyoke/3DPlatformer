@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
-enum PlayerState
+using UnityEngine.EventSystems;
+public enum PlayerState
 {
     Idle,
     Moving,
@@ -49,20 +50,31 @@ public class PlayerController : MonoBehaviour
         audioSource.volume = repositoryBase.playerSettingsObj.characterVolume;
     }
 
+    private void OnEnable()
+    {
+        EventManager.playerGetDamageEvent += GetDamage;
+        EventManager.playerAttackEvent += Attack;
+    }
+
+    private void OnDisable()
+    {
+        EventManager.playerGetDamageEvent -= GetDamage;
+        EventManager.playerAttackEvent -= Attack;
+
+    }
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0)/*&&currentPlayerState==PlayerState.Idle*/)//can change direction while moves?
+        //if (Input.touchCount > 0)
+        //{
+        //    FindPoint();
+        //}
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             FindPoint();
         }
-        if (currentPlayerState == PlayerState.Attack && Input.GetKeyDown(KeyCode.A)
-                    && Time.time > prevTime + repositoryBase.playerInfoObj.attackRate)
-        {
-            Attack();
-            prevTime = Time.time;
-        }
-        ValidateCurrentBehaviour();
 
+        ValidateCurrentBehaviour();
     }
 
     private void ValidateCurrentBehaviour()
@@ -84,21 +96,25 @@ public class PlayerController : MonoBehaviour
     private void FindPoint()  //find point and sort for layers
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//MOUSE
+        //Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).rawPosition);
         if (Physics.Raycast(ray, out currentRayPoint, maxDistance:100f, layerMask:-1, QueryTriggerInteraction.Ignore))
         {
-            switch (currentRayPoint.transform.gameObject.layer)
-            {                
-                case 6:
-                    SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Ground);
-                    break;//ground
-                case 7:
-                    SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Enemy);
-                    break;//enemy
-                case 9:
-                    SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Interactable);
-                    break;//interactable
+            if (!EventSystem.current.IsPointerOverGameObject(-1 /*Input.GetTouch(0).fingerId)*/))
+            {
+                switch (currentRayPoint.transform.gameObject.layer)
+                {
+                    case 6:
+                        SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Ground);
+                        break;//ground
+                    case 7:
+                        SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Enemy);
+                        break;//enemy
+                    case 9:
+                        SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Interactable);
+                        break;//interactable
 
-            }
+                }
+            }           
         }
     }
 
@@ -140,6 +156,8 @@ public class PlayerController : MonoBehaviour
                     }
                     currentPlayerState = PlayerState.Moving;
                 }
+                else
+                    return;
                 break;
             case PlayerState.Attack:
                 switch (aim)
@@ -151,6 +169,7 @@ public class PlayerController : MonoBehaviour
                 }
                 break;
         }
+        EventManager.CallOnPlayerCurrentState(currentPlayerState);
     }
     private bool IsValidPath(PlayerAim aim)
     {
@@ -204,7 +223,7 @@ public class PlayerController : MonoBehaviour
                         return false;
                     }
                     transform.rotation = Quaternion.RotateTowards(transform.rotation,
-                                                      Quaternion.LookRotation(currentRayPoint.transform.position - transform.position),
+                                                      Quaternion.LookRotation(currentEnemy.transform.position - transform.position),
                                                                   Time.deltaTime * agent.angularSpeed / 2); //turn to enemy
                     return true;
                 }
@@ -222,6 +241,7 @@ public class PlayerController : MonoBehaviour
     public void GetDamage(float damage)
     {
         currentHealth -= damage;
+        Debug.Log(currentHealth);
         EventManager.CallOnCurrentPlayerHealth(currentHealth);
         if (currentHealth<=0)
         {
@@ -239,8 +259,12 @@ public class PlayerController : MonoBehaviour
 
     private void Attack()
     {
-        animator.SetFloat("AttackNumber", Random.Range(0f, 1f));
-        animator.SetTrigger("Attack"); 
+        if (Time.time > prevTime + repositoryBase.playerInfoObj.attackRate)
+        {
+            animator.SetFloat("AttackNumber", Random.Range(0f, 1f));
+            animator.SetTrigger("Attack");
+            prevTime = Time.time;
+        }      
     }
 
     private void Hit() //animator controller

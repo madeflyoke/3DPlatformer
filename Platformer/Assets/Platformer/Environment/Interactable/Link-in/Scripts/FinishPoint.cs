@@ -21,7 +21,6 @@ public class FinishPoint : MonoBehaviour
         {
             audioSource.PlayOneShot(winSFX);
             EventManager.CallOnLevelComplete();
-            Debug.Log("win");
         }
     }
 }

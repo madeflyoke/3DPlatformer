@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 23537688779314044}
   - component: {fileID: 65707845505491674}
   - component: {fileID: 8623365075922872392}
+  - component: {fileID: 7731149535675851535}
   m_Layer: 9
   m_Name: FinishPoint
   m_TagString: Untagged
@@ -95,8 +96,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.90511835, y: 0.24048845, z: 0.9233119}
-  m_Center: {x: -0.004121145, y: 0.19769697, z: -0.0032844543}
+  m_Size: {x: 0.28108978, y: 0.22193122, z: 0.29188538}
+  m_Center: {x: -0.005504608, y: 0.18841836, z: -0.0016695659}
 --- !u!82 &8623365075922872392
 AudioSource:
   m_ObjectHideFlags: 0
@@ -193,6 +194,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &7731149535675851535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620071135427400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a6226c20d5d21f46998b0bd935c2e83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  winSFX: {fileID: 8300000, guid: c8906fa2234e04e4ebaf0a2ff1f3276d, type: 3}
 --- !u!1001 &8449308889565094109
 PrefabInstance:
   m_ObjectHideFlags: 0

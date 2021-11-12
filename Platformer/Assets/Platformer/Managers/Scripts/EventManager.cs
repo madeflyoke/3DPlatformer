@@ -12,6 +12,29 @@ public class EventManager : MonoBehaviour
     public static event Action<PlayerAim, Vector3> setPointEvent;  
     public static event Action<float> currentPlayerHealthEvent;
 
+    public static event Action<Ray> playerInputMoveEvent;
+    public static event Action<float> playerGetDamageEvent;
+    public static event Action playerAttackEvent;
+    public static event Action<PlayerState> playerCurrentStateEvent;
+
+    public static void CallOnPlayerCurrentState(PlayerState state)
+    {
+        playerCurrentStateEvent?.Invoke(state);
+    }
+
+    public static void CallOnPlayerGetDamage(float damage)
+    {
+        playerGetDamageEvent?.Invoke(damage);
+    }
+    public static void CallOnPlayerAttack()
+    {
+        playerAttackEvent?.Invoke();
+    }
+    public static void CallOnPlayerInputMove(Ray ray)
+    {
+        playerInputMoveEvent?.Invoke(ray);
+    }
+
     public static void CallOnStartGame()
     {
         startGameEvent?.Invoke();

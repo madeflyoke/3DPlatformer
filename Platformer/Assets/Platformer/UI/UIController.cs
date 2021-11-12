@@ -5,6 +5,7 @@ public class UIController : MonoBehaviour
 {
     [SerializeField] private GameObject gamePlayScreen;
     [SerializeField] private GameObject mainMenuScreen;
+    [SerializeField] private GameObject levelCompleteScreen;
     //[SerializeField] private GameObject endGameScreen;
 
     private void Awake()
@@ -16,11 +17,19 @@ public class UIController : MonoBehaviour
     {
         //EventManager.playerDieEvent += SetEndGameScreen;
         EventManager.setSceneEvent += SetScreen;
+        EventManager.levelCompleteEvent += LevelCompleteScreen;
     }
     private void OnDisable()
     {
         //EventManager.playerDieEvent -= SetEndGameScreen;
         EventManager.setSceneEvent -= SetScreen;
+        EventManager.levelCompleteEvent -= LevelCompleteScreen;
+
+    }
+
+    private void LevelCompleteScreen()
+    {
+        levelCompleteScreen.SetActive(true);
     }
 
     private void SetScreen(int sceneIndex)
@@ -37,15 +46,11 @@ public class UIController : MonoBehaviour
         }
     }
 
-    //private void SetEndGameScreen()
-    //{
-    //    endGameScreen.SetActive(true);
-    //}
-
     private void DisableScreens()
     {
         mainMenuScreen.SetActive(false);
         gamePlayScreen.SetActive(false);
+        levelCompleteScreen.SetActive(false);
         //endGameScreen.SetActive(false);
     }
 

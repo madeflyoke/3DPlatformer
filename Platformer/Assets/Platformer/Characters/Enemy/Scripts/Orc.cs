@@ -14,7 +14,7 @@ public class Orc : Enemy
     {
         if ((player.transform.position - transform.position).magnitude<=attackRange)
         {
-            player.GetDamage(damage);
+            EventManager.CallOnPlayerGetDamage(damage);
             audioSource.PlayOneShot(attackSFX);
         }     
     }
