@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36635ef7a434db54dba0bd1e62b48817, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scenesController: {fileID: -1289006925562635264, guid: a641a5a31e6a0434eb27abef0299f03f,
+  gameStateController: {fileID: -1289006925562635264, guid: a641a5a31e6a0434eb27abef0299f03f,
     type: 3}
 --- !u!114 &-2376737803019405572
 MonoBehaviour:

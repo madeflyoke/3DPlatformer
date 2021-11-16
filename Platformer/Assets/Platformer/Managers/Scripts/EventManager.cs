@@ -3,11 +3,8 @@ using System;
 
 public class EventManager : MonoBehaviour
 {
-    public static event Action startGameEvent;
-
-    public static event Action<int> setSceneEvent;   
-    public static event Action levelCompleteEvent;
-    public static event Action playerDieEvent;
+    public static event Action<GameState> requestGameStateEvent;
+    public static event Action<bool> gamePauseEvent;
 
     public static event Action<PlayerAim, Vector3> setPointEvent;  
     public static event Action<float> currentPlayerHealthEvent;
@@ -15,11 +12,14 @@ public class EventManager : MonoBehaviour
     public static event Action<Ray> playerInputMoveEvent;
     public static event Action<float> playerGetDamageEvent;
     public static event Action playerAttackEvent;
-    public static event Action<PlayerState> playerCurrentStateEvent;
 
-    public static void CallOnPlayerCurrentState(PlayerState state)
+    public static void CallOnRequestGameState(GameState state)
     {
-        playerCurrentStateEvent?.Invoke(state);
+        requestGameStateEvent?.Invoke(state);
+    }
+    public static void CallOnGamePause(bool isPaused)
+    {
+        gamePauseEvent?.Invoke(isPaused);
     }
 
     public static void CallOnPlayerGetDamage(float damage)
@@ -34,19 +34,6 @@ public class EventManager : MonoBehaviour
     {
         playerInputMoveEvent?.Invoke(ray);
     }
-
-    public static void CallOnStartGame()
-    {
-        startGameEvent?.Invoke();
-    }
-    public static void CallOnSetScene(int index)
-    {
-        setSceneEvent?.Invoke(index);
-    }
-    public static void CallOnPlayerDie()
-    {
-        playerDieEvent?.Invoke();
-    }
     public static void CallOnCurrentPlayerHealth(float amount)
     {
         currentPlayerHealthEvent?.Invoke(amount);
@@ -57,8 +44,4 @@ public class EventManager : MonoBehaviour
         setPointEvent?.Invoke(aim, pos);
     }
 
-    public static void CallOnLevelComplete()
-    {
-        levelCompleteEvent?.Invoke();
-    }
 }

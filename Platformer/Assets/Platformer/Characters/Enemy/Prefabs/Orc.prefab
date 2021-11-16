@@ -383,7 +383,7 @@ MonoBehaviour:
   deathEffect: {fileID: 2052742559792449194, guid: 98ed90ff06e56b34d8833ac23269aba2,
     type: 3}
   maxHealth: 100
-  damage: 5
+  damage: 7
   attackRange: 2
   attackRate: 1.7
   attackSFX: {fileID: 8300000, guid: 94c93377631b5c14e959b951b435b46a, type: 3}

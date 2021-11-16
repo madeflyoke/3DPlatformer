@@ -20,14 +20,17 @@ public class Orc : Enemy
     }
     protected override void CheckDistanceToPlayer()
     {
-        Vector3 distanceToPlayer = player.transform.position - transform.position;
-        if (distanceToPlayer.magnitude<=attackRange)
+        if (player.gameObject.layer==3)
         {
-            transform.rotation = Quaternion.RotateTowards(transform.rotation,
-                                          Quaternion.LookRotation(distanceToPlayer),
-                                                      Time.deltaTime * 500);
-            Attack();        
-        }
+            Vector3 distanceToPlayer = player.transform.position - transform.position;
+            if (distanceToPlayer.magnitude <= attackRange)
+            {
+                transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                                              Quaternion.LookRotation(distanceToPlayer),
+                                                          Time.deltaTime * 500);
+                Attack();
+            }
+        }       
     }
 
 }

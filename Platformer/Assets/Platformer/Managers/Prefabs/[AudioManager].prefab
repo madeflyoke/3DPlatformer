@@ -45,8 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 163946fb07e7dc54f8f2c328bc45d5dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  battleTheme: {fileID: 8300000, guid: 200e5bcbf5a26514ba86049c72548a66, type: 3}
+  mainMenuTheme: {fileID: 8300000, guid: b5b3a955ec1ad4245ac215d636d5b806, type: 3}
   evilLevelTheme: {fileID: 8300000, guid: f017830812d2ed041b30ebbfb67a1430, type: 3}
-  someNextLevelTheme: {fileID: 0}
+  winSFX: {fileID: 8300000, guid: c8906fa2234e04e4ebaf0a2ff1f3276d, type: 3}
+  loseSFX: {fileID: 8300000, guid: abd982e89c5c3e748801118e331b56e6, type: 3}
 --- !u!82 &1958321546452136598
 AudioSource:
   m_ObjectHideFlags: 0

@@ -2,14 +2,12 @@ using UnityEngine;
 using DG.Tweening;
 using Zenject;
 
-
-
 public class PointersHandler : MonoBehaviour
 {
     [Inject] private RepositoryBase repositoryBase;
 
     [SerializeField] private AudioClip pointerSFX;
-    [SerializeField] private float pointDropTime=0.2f;
+    [SerializeField] private float pointDropTime=0.15f;
     [SerializeField] private GameObject MovePointer;
     [SerializeField] private GameObject EnemyPointer;
     [SerializeField] private GameObject InteractPointer;
@@ -60,11 +58,9 @@ public class PointersHandler : MonoBehaviour
                 currentPointer.SetActive(true);
                 return;
         }
-        //transform.position = pos+Vector3.up;
         transform.position = pos;
         currentPointer.SetActive(true);      
         transform.DOPunchScale(Vector3.one * 0.3f, pointDropTime);
-        //transform.DOMove(pos, pointDropTime);
         audioSource.PlayOneShot(pointerSFX, repositoryBase.playerSettingsObj.envVolume*1.5f);
 
     }

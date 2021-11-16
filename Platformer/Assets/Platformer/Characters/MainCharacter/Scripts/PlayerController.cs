@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
+using System;
+using System.Collections;
 using UnityEngine.EventSystems;
 public enum PlayerState
 {
     Idle,
     Moving,
-    Attack,  
+    Attack,
+    Died
 }
 public enum PlayerAim
 {
@@ -15,10 +18,10 @@ public enum PlayerAim
     Enemy,
     Interactable
 }
-
-
 public class PlayerController : MonoBehaviour
 {
+    public static event Action<PlayerState> playerCurrentStateEvent;
+
     [Inject] private RepositoryBase repositoryBase;
     [SerializeField] private AudioClip attackSFX;
 
@@ -30,11 +33,13 @@ public class PlayerController : MonoBehaviour
     private NavMeshAgent agent;
     private Animator animator;
     private AudioSource audioSource;
-    
-    private RaycastHit currentRayPoint; //ray point on click screen
+
+    private Collider currentRayPointCollider;
     private Vector3 newPos; //correct position to go
     private Enemy currentEnemy;
+
     private float prevTime;
+    private bool isInputsEnable;
 
     private void Awake()
     {
@@ -42,7 +47,7 @@ public class PlayerController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
-        currentHealth = repositoryBase.playerInfoObj.maxHealth;     
+        currentHealth = repositoryBase.playerInfoObj.maxHealth;
     }
 
     private void Start()
@@ -54,27 +59,34 @@ public class PlayerController : MonoBehaviour
     {
         EventManager.playerGetDamageEvent += GetDamage;
         EventManager.playerAttackEvent += Attack;
+        EventManager.gamePauseEvent += GamePauseLogic;
     }
 
     private void OnDisable()
     {
         EventManager.playerGetDamageEvent -= GetDamage;
         EventManager.playerAttackEvent -= Attack;
-
+        EventManager.gamePauseEvent += GamePauseLogic;
+    }
+    private void GamePauseLogic(bool isGamePaused)
+    {
+        isInputsEnable = isGamePaused ? false : true;
     }
 
     private void Update()
     {
-        //if (Input.touchCount > 0)
-        //{
-        //    FindPoint();
-        //}
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (isInputsEnable)
         {
-            FindPoint();
+            //if (Input.touchCount > 0)
+            //{
+            //    FindPoint();
+            //}
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                FindPoint();
+            }
+            ValidateCurrentBehaviour();
         }
-
-        ValidateCurrentBehaviour();
     }
 
     private void ValidateCurrentBehaviour()
@@ -92,16 +104,18 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-
     private void FindPoint()  //find point and sort for layers
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//MOUSE
-        //Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).rawPosition);
-        if (Physics.Raycast(ray, out currentRayPoint, maxDistance:100f, layerMask:-1, QueryTriggerInteraction.Ignore))
-        {
-            if (!EventSystem.current.IsPointerOverGameObject(-1 /*Input.GetTouch(0).fingerId)*/))
+        /*Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);*///MOUSE
+        Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).rawPosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, maxDistance: 100f, layerMask: -1, QueryTriggerInteraction.Ignore))
+        {           
+            if (!EventSystem.current.IsPointerOverGameObject(/*-1*/Input.GetTouch(0).fingerId))
             {
-                switch (currentRayPoint.transform.gameObject.layer)
+                if (currentRayPointCollider != null && hit.collider.gameObject == currentRayPointCollider.gameObject)
+                    return; //checking for not multiple spamming
+                currentRayPointCollider = hit.collider;
+                switch (currentRayPointCollider.transform.gameObject.layer)
                 {
                     case 6:
                         SetCurrentBehaviour(PlayerState.Moving, PlayerAim.Ground);
@@ -114,17 +128,16 @@ public class PlayerController : MonoBehaviour
                         break;//interactable
 
                 }
-            }           
+            }
         }
     }
-
     private void SetCurrentBehaviour(PlayerState state, PlayerAim aim) //set behav depending on state and aim
     {
         currentPlayerAim = aim;
         if (!string.IsNullOrEmpty(currentAnimationName)) { animator.SetBool(currentAnimationName, false); }
 
         switch (state)
-        {
+        {           
             case PlayerState.Idle:
                 switch (aim)
                 {
@@ -142,16 +155,16 @@ public class PlayerController : MonoBehaviour
                     switch (aim)
                     {
                         case PlayerAim.Interactable:
-                            EventManager.CallOnSetPoint(aim, currentRayPoint.collider.bounds.center);
+                            EventManager.CallOnSetPoint(aim, currentRayPointCollider.bounds.center);
                             break;
-                        case PlayerAim.Ground:                     
+                        case PlayerAim.Ground:
                             EventManager.CallOnSetPoint(aim, newPos);
                             break;
 
                         case PlayerAim.Enemy:
-                            EventManager.CallOnSetPoint(aim, new Vector3(currentRayPoint.transform.position.x,
-                                                                         currentRayPoint.collider.bounds.max.y + 0.5f,
-                                                                          currentRayPoint.transform.position.z));
+                            EventManager.CallOnSetPoint(aim, new Vector3(currentRayPointCollider.transform.position.x,
+                                                                         currentRayPointCollider.bounds.max.y + 0.5f,
+                                                                          currentRayPointCollider.transform.position.z));
                             break;
                     }
                     currentPlayerState = PlayerState.Moving;
@@ -164,16 +177,20 @@ public class PlayerController : MonoBehaviour
                 {
                     case PlayerAim.Enemy:
                         currentPlayerState = PlayerState.Attack;
-                        currentEnemy = currentRayPoint.collider.transform.root.GetComponent<Enemy>();
+                        currentEnemy = currentRayPointCollider.transform.root.GetComponent<Enemy>();                  
                         break;
                 }
                 break;
+            case PlayerState.Died:
+                currentPlayerState = PlayerState.Died;
+                StartCoroutine(Die());
+                return;
         }
-        EventManager.CallOnPlayerCurrentState(currentPlayerState);
+        playerCurrentStateEvent?.Invoke(currentPlayerState);
     }
     private bool IsValidPath(PlayerAim aim)
     {
-        if (NavMesh.SamplePosition(currentRayPoint.collider.transform.position, out NavMeshHit hit, 2f,1)) //get the nearest navpoint
+        if (NavMesh.SamplePosition(currentRayPointCollider.transform.position, out NavMeshHit hit, 2f, 1)) //get the nearest navpoint
         {
             newPos = hit.position;
             NavMeshPath path = new NavMeshPath();
@@ -184,14 +201,13 @@ public class PlayerController : MonoBehaviour
             {
                 return true;
             }
-               
+
             else
                 return false;
         }
         else
             return false;
     }
-
     private bool CheckPos(PlayerAim aim) //repeatly check the point 
     {
         switch (aim)
@@ -227,7 +243,7 @@ public class PlayerController : MonoBehaviour
                                                                   Time.deltaTime * agent.angularSpeed / 2); //turn to enemy
                     return true;
                 }
-                float distanceToEnemy = (currentRayPoint.transform.position - transform.position).magnitude;
+                float distanceToEnemy = (currentRayPointCollider.transform.position - transform.position).magnitude;
                 if (distanceToEnemy <= repositoryBase.playerInfoObj.attackRange)
                 {
                     agent.ResetPath();
@@ -241,30 +257,32 @@ public class PlayerController : MonoBehaviour
     public void GetDamage(float damage)
     {
         currentHealth -= damage;
-        Debug.Log(currentHealth);
         EventManager.CallOnCurrentPlayerHealth(currentHealth);
-        if (currentHealth<=0)
+        if (currentHealth <= 0)
         {
-            Die();
+            SetCurrentBehaviour(PlayerState.Died, PlayerAim.None);
             return;
         }
         animator.SetTrigger("GetHit");
     }
 
-    private void Die()
+    private IEnumerator Die()
     {
         animator.SetTrigger("Die");
-        EventManager.CallOnPlayerDie();
+        gameObject.layer = 6;
+        isInputsEnable = false;
+        yield return new WaitForSeconds(2f);
+        EventManager.CallOnRequestGameState(GameState.EndGame);
     }
 
     private void Attack()
     {
         if (Time.time > prevTime + repositoryBase.playerInfoObj.attackRate)
         {
-            animator.SetFloat("AttackNumber", Random.Range(0f, 1f));
+            animator.SetFloat("AttackNumber", UnityEngine.Random.Range(0f, 1f));
             animator.SetTrigger("Attack");
             prevTime = Time.time;
-        }      
+        }
     }
 
     private void Hit() //animator controller
@@ -272,7 +290,6 @@ public class PlayerController : MonoBehaviour
         currentEnemy.GetDamage(repositoryBase.playerInfoObj.damage);
         audioSource.PlayOneShot(attackSFX);
     }
-
 
 
 }

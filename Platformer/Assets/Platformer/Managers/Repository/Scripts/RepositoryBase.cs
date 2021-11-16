@@ -8,8 +8,4 @@ public class RepositoryBase : MonoBehaviour
     PlayerSettings playerSettings = new PlayerSettings();
     public PlayerSettings playerSettingsObj => playerSettings;
 
-    private void Awake()
-    {
-        playerSettingsObj.Initialize();
-    }
 }
