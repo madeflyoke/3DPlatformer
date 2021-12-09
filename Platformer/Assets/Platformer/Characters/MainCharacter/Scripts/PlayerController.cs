@@ -77,11 +77,7 @@ public class PlayerController : MonoBehaviour
     {
         if (isInputsEnable)
         {
-            //if (Input.touchCount > 0)
-            //{
-            //    FindPoint();
-            //}
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (Input.touchCount > 0)
             {
                 FindPoint();
             }
@@ -106,11 +102,10 @@ public class PlayerController : MonoBehaviour
     }
     private void FindPoint()  //find point and sort for layers
     {
-        /*Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);*///MOUSE
         Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).rawPosition);
         if (Physics.Raycast(ray, out RaycastHit hit, maxDistance: 100f, layerMask: -1, QueryTriggerInteraction.Ignore))
         {           
-            if (!EventSystem.current.IsPointerOverGameObject(/*-1*/Input.GetTouch(0).fingerId))
+            if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
             {
                 if (currentRayPointCollider != null && hit.collider.gameObject == currentRayPointCollider.gameObject)
                     return; //checking for not multiple spamming
