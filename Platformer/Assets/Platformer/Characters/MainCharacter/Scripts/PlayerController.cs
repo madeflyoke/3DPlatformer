@@ -77,7 +77,13 @@ public class PlayerController : MonoBehaviour
     {
         if (isInputsEnable)
         {
-            if (Input.touchCount > 0)
+            if (
+#if PLATFORM_STANDALONE_WIN || UNITY_EDITOR
+                Input.GetKeyDown(KeyCode.Mouse0)
+#else
+                Input.touchCount > 0
+#endif
+               )
             {
                 FindPoint();
             }
@@ -100,12 +106,22 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
+
     private void FindPoint()  //find point and sort for layers
     {
+#if PLATFORM_STANDALONE_WIN || UNITY_EDITOR
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+#else
         Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).rawPosition);
+#endif
         if (Physics.Raycast(ray, out RaycastHit hit, maxDistance: 100f, layerMask: -1, QueryTriggerInteraction.Ignore))
-        {           
-            if (!EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+        {
+            if (
+#if PLATFORM_STANDALONE_WIN || UNITY_EDITOR
+                EventSystem.current.IsPointerOverGameObject() == false)
+#else
+                EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)==false)
+#endif
             {
                 if (currentRayPointCollider != null && hit.collider.gameObject == currentRayPointCollider.gameObject)
                     return; //checking for not multiple spamming
@@ -132,7 +148,7 @@ public class PlayerController : MonoBehaviour
         if (!string.IsNullOrEmpty(currentAnimationName)) { animator.SetBool(currentAnimationName, false); }
 
         switch (state)
-        {           
+        {
             case PlayerState.Idle:
                 switch (aim)
                 {
@@ -172,7 +188,7 @@ public class PlayerController : MonoBehaviour
                 {
                     case PlayerAim.Enemy:
                         currentPlayerState = PlayerState.Attack;
-                        currentEnemy = currentRayPointCollider.transform.root.GetComponent<Enemy>();                  
+                        currentEnemy = currentRayPointCollider.transform.root.GetComponent<Enemy>();
                         break;
                 }
                 break;
@@ -285,6 +301,4 @@ public class PlayerController : MonoBehaviour
         currentEnemy.GetDamage(repositoryBase.playerInfoObj.damage);
         audioSource.PlayOneShot(attackSFX);
     }
-
-
 }

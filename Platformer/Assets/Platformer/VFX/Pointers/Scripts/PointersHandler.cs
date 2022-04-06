@@ -17,7 +17,7 @@ public class PointersHandler : MonoBehaviour
     public GameObject interactPointer { get; private set; }
 
     private GameObject currentPointer;
-
+    private Vector3 defaultSize;
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -27,6 +27,7 @@ public class PointersHandler : MonoBehaviour
         enemyPointer.SetActive(false);
         interactPointer = Instantiate(InteractPointer, transform, false);
         interactPointer.SetActive(false);
+        defaultSize = transform.localScale;
     }
     private void OnEnable()
     {
@@ -40,7 +41,7 @@ public class PointersHandler : MonoBehaviour
 
     private void SetPointBehaviour(PlayerAim aim, Vector3 pos)
     {
-        DOTween.Kill(this);
+        transform.DOKill();
         currentPointer?.SetActive(false);
         switch (aim)
         {
@@ -59,6 +60,7 @@ public class PointersHandler : MonoBehaviour
                 return;
         }
         transform.position = pos;
+        transform.localScale = defaultSize;
         currentPointer.SetActive(true);      
         transform.DOPunchScale(Vector3.one * 0.3f, pointDropTime);
         audioSource.PlayOneShot(pointerSFX, repositoryBase.playerSettingsObj.envVolume*1.5f);

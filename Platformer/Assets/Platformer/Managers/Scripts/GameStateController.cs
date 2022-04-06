@@ -19,12 +19,13 @@ public class GameStateController : MonoBehaviour
     public static event Action<GameState> setGameStateEvent;
     public static event Action<int> setSceneEvent;
 
+    [SerializeField] private int targetFps;
     private GameState currentGameState = GameState.None;
-    private int currentSceneIndex=0;
+    private int currentSceneIndex = 0;
 
     private void Awake()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = targetFps;
     }
     private void Start()
     {
@@ -33,13 +34,13 @@ public class GameStateController : MonoBehaviour
 
     private void OnEnable()
     {
-        EventManager.requestGameStateEvent += SetCurrentGameState;    
+        EventManager.requestGameStateEvent += SetCurrentGameState;
     }
 
     private void OnDisable()
     {
         EventManager.requestGameStateEvent -= SetCurrentGameState;
-    } 
+    }
 
     private void SetCurrentGameState(GameState state)
     {
@@ -70,9 +71,9 @@ public class GameStateController : MonoBehaviour
         }
     }
     private IEnumerator SetScene(int index, GameState aimState)
-    {       
+    {
         AsyncOperation operation = SceneManager.LoadSceneAsync(index);
-        while (operation.progress<1)
+        while (operation.progress < 1)
         {
             yield return null;
         }
@@ -80,7 +81,7 @@ public class GameStateController : MonoBehaviour
         setSceneEvent?.Invoke(currentSceneIndex);
         SetCurrentGameState(aimState);
         yield return null;
-    } 
+    }
 
     private void PauseGame(bool isPaused)
     {
