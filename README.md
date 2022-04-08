@@ -14,7 +14,7 @@
 * Cinemachine
 * NavMesh
 
-### Features
+## Features
 * Target (enemy, ground, interactions etc.) based system
 * Easy puzzle mechanics
 * Music and SFX (including 3D sound corrections)
