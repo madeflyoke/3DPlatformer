@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
 #if PLATFORM_STANDALONE_WIN || UNITY_EDITOR
                 Input.GetKeyDown(KeyCode.Mouse0)
 #else
-                Input.touchCount > 0
+                Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended
 #endif
                )
             {
@@ -112,7 +112,7 @@ public class PlayerController : MonoBehaviour
 #if PLATFORM_STANDALONE_WIN || UNITY_EDITOR
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 #else
-        Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).rawPosition);
+        Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
 #endif
         if (Physics.Raycast(ray, out RaycastHit hit, maxDistance: 100f, layerMask: -1, QueryTriggerInteraction.Ignore))
         {
