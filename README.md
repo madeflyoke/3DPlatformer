@@ -22,6 +22,6 @@
 
 ## Screenshots
 
-<img src="/Screenshots/1.png" width = "400"/> <img src="/Screenshots/2.png" width = "400"/> 
+<img src="/Screenshots/1.jpg"/> <img src="/Screenshots/2.jpg"/> 
 
-<img src="/Screenshots/3.png" width = "400"/> <img src="/Screenshots/4.png" width = "400"/>
+<img src="/Screenshots/3.jpg"/> <img src="/Screenshots/4.jpg"/>
