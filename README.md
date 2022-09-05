@@ -3,6 +3,7 @@
 > :warning: **Demo version**
 
 ## Details
+* Title: "Doggy Knight Adventure"
 * Genre(s): Action-adventure, Platformer  
 * Platform(s): Android, PC
 * Engine: Unity
